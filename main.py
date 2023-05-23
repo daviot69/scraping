@@ -36,7 +36,16 @@ if __name__ == "__main__":
             matches["team"] = team_name
             matches["season"] = year
 
-            all_matches.append(matches)
+            soup = BeautifulSoup(data.text, features="html.parser")
+            links = [lnk.get("href") for lnk in soup.find_all('a')]
+            links = [lnk for lnk in links if lnk and 'all_comps/shooting' in lnk]
+            data = requests.get(f"{base_url}{links[0]}")
+            shooting = pd.read_html(data.text, match="Shooting")[0]
+            shooting.columns = shooting.columns.droplevel()
+
+            team_data = matches.merge(shooting[["Date", "Sh", "SoT", "Dist", "FK", "PK", "PKatt"]], on="Date")
+            print(team_data)
+            all_matches.append(team_data)
 
             time.sleep(10)
 
