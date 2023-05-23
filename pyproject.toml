@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "scraping"
+version = "0.1.0"
+description = "Football Results Web Scraping"
+authors = ["Ian Campbell <ianjcampbell69@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+beautifulsoup4 = "^4.12.2"
+pandas = "^2.0.1"
+requests = "^2.31.0"
+lxml = "^4.9.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
