@@ -24,6 +24,9 @@ if __name__ == "__main__":
         links = [lnk.get("href") for lnk in links]
         links = [lnk for lnk in links if '/squads' in lnk]
 
+        previous_season = soup.select("a.prev")[0].get("href")
+        standings_url = f"{base_url}{previous_season}"
+
         team_urls = [f"{base_url}{lnk}" for lnk in links]
 
         for team_url in team_urls:
@@ -33,8 +36,10 @@ if __name__ == "__main__":
             data = requests.get(team_url)
 
             matches = pd.read_html(data.text, match="Scores & Fixtures")[0]
-            matches["team"] = team_name
-            matches["season"] = year
+            matches["Team"] = team_name
+            matches["Year"] = year
+            matches["Season"] = f"{str(year - 1)}/{str(year)[-2:]}"
+            matches.drop(columns=['Formation', 'Captain', 'Notes', 'Match Report'], inplace=True)
 
             soup = BeautifulSoup(data.text, features="html.parser")
             links = [lnk.get("href") for lnk in soup.find_all('a')]
@@ -44,7 +49,7 @@ if __name__ == "__main__":
             shooting.columns = shooting.columns.droplevel()
 
             team_data = matches.merge(shooting[["Date", "Sh", "SoT", "Dist", "FK", "PK", "PKatt"]], on="Date")
-            print(team_data)
+
             all_matches.append(team_data)
 
             time.sleep(10)
